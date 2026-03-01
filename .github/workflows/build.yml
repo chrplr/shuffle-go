@@ -1,0 +1,126 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-linux-windows:
+    name: Build Linux and Windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Install fyne-cross
+        run: go install github.com/lucor/fyne-cross/v2@latest
+
+      - name: Build with fyne-cross
+        run: |
+          # Build Linux (amd64, arm64)
+          fyne-cross linux -arch amd64,arm64 -name shuffle-gui cmd/shuffle-gui/main.go
+          # Build Windows (amd64, arm64)
+          fyne-cross windows -arch amd64,arm64 -name shuffle-gui cmd/shuffle-gui/main.go
+
+      - name: Package
+        run: |
+          mkdir -p release
+          for platform in linux windows; do
+            for arch in amd64 arm64; do
+              ext=""
+              if [ "$platform" = "windows" ]; then ext=".exe"; fi
+              
+              target_dir="dist/$platform-$arch"
+              mkdir -p "$target_dir"
+              
+              # Build CLI (CGO disabled for maximum portability)
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -o "$target_dir/shuffle-cli$ext" cmd/shuffle-cli/main.go
+              
+              # Copy GUI from fyne-cross output
+              # fyne-cross output path pattern: fyne-cross/bin/<target>-<arch>/<name><ext>
+              cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
+              
+              # Copy README
+              cp README.md "$target_dir/"
+              
+              # Zip it
+              cd "$target_dir"
+              zip -r "../../release/shuffle-$platform-$arch.zip" .
+              cd ../..
+            done
+          done
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-windows-binaries
+          path: release/*.zip
+
+  build-macos:
+    name: Build MacOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Build and Package MacOS
+        run: |
+          mkdir -p release
+          for arch in amd64 arm64; do
+            target_dir="dist/macos-$arch"
+            mkdir -p "$target_dir"
+            
+            # Build CLI
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -o "$target_dir/shuffle-cli" cmd/shuffle-cli/main.go
+            
+            # Build GUI
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w" -o "$target_dir/shuffle-gui" cmd/shuffle-gui/main.go
+            
+            # Copy README
+            cp README.md "$target_dir/"
+            
+            # Zip it
+            cd "$target_dir"
+            zip -r "../../release/shuffle-macos-$arch.zip" .
+            cd ../..
+          done
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-binaries
+          path: release/*.zip
+
+  release:
+    name: Create Release
+    needs: [build-linux-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.zip
+          generate_release_notes: true

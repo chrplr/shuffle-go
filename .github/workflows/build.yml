@@ -37,9 +37,9 @@ jobs:
       - name: Build with fyne-cross
         run: |
           # Build Linux (amd64, arm64)
-          fyne-cross linux -arch amd64,arm64 -name shuffle-gui -ldflags "-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" cmd/shuffle-gui
+          fyne-cross linux -arch amd64,arm64 -appID github.com.chrplr.shuffle-go -name shuffle-gui -ldflags "-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" cmd/shuffle-gui
           # Build Windows (amd64, arm64)
-          fyne-cross windows -arch amd64,arm64 -name shuffle-gui -ldflags "-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" cmd/shuffle-gui
+          fyne-cross windows -arch amd64,arm64 -appID github.com.chrplr.shuffle-go -name shuffle-gui -ldflags "-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" cmd/shuffle-gui
 
       - name: Package
         run: |

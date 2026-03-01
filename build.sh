@@ -19,10 +19,13 @@ LDFLAGS="-s -w -X=$MODULE/internal/version.Version=$VERSION"
 echo "Building local shuffle-cli..."
 go build -ldflags="$LDFLAGS" -o shuffle-cli ./cmd/shuffle-cli
 
-# Build the GUI version for local OS
-# Note: This requires CGO and graphics development headers (e.g., libgl1-mesa-dev on Linux)
+# Build the GUI version (Fyne)
 echo "Building local shuffle-gui..."
 go build -ldflags="$LDFLAGS" -o shuffle-gui ./cmd/shuffle-gui
+
+# Build the GUI version (Gio)
+echo "Building local shuffle-gio..."
+go build -ldflags="$LDFLAGS" -o shuffle-gio ./cmd/shuffle-gio
 
 # Cross-compilation examples using fyne-cross (if installed)
 if command -v fyne-cross >/dev/null 2>&1; then
@@ -42,5 +45,6 @@ echo "--------------------------------------------------"
 echo "Build complete!"
 echo "Binaries created:"
 echo "  - ./shuffle-cli (Command Line Interface)"
-echo "  - ./shuffle-gui (Graphical User Interface)"
+echo "  - ./shuffle-gui (Graphical User Interface - Fyne)"
+echo "  - ./shuffle-gio (Graphical User Interface - Gio)"
 echo "--------------------------------------------------"

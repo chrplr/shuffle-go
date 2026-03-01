@@ -1,8 +1,25 @@
+// Copyright (C) 2026 Christophe Pallier
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
+	"os"
 	"strconv"
 	"strings"
 
@@ -13,7 +30,8 @@ import (
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 
-	"github.com/chrplr/shuffle/pkg/shuffle"
+	"github.com/chrplr/shuffle-go/internal/version"
+	"github.com/chrplr/shuffle-go/pkg/shuffle"
 )
 
 type shuffleApp struct {
@@ -29,6 +47,14 @@ type shuffleApp struct {
 }
 
 func main() {
+	versionFlag := flag.Bool("v", false, "Show version")
+	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("shuffle-gui version %s\n", version.Version)
+		os.Exit(0)
+	}
+
 	a := app.NewWithID("com.chrplr.shuffle")
 	w := a.NewWindow("Shuffle-Go GUI")
 

@@ -23,14 +23,23 @@ jobs:
           cache: true
 
       - name: Install fyne-cross
-        run: go install github.com/lucor/fyne-cross/v2@latest
+        run: go install github.com/fyne-io/fyne-cross@latest
+
+      - name: Set Version
+        id: vars
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=dev" >> $GITHUB_ENV
+          fi
 
       - name: Build with fyne-cross
         run: |
           # Build Linux (amd64, arm64)
-          fyne-cross linux -arch amd64,arm64 -name shuffle-gui cmd/shuffle-gui/main.go
+          fyne-cross linux -arch amd64,arm64 -name shuffle-gui -ldflags "-X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" cmd/shuffle-gui/main.go
           # Build Windows (amd64, arm64)
-          fyne-cross windows -arch amd64,arm64 -name shuffle-gui cmd/shuffle-gui/main.go
+          fyne-cross windows -arch amd64,arm64 -name shuffle-gui -ldflags "-X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" cmd/shuffle-gui/main.go
 
       - name: Package
         run: |
@@ -44,10 +53,9 @@ jobs:
               mkdir -p "$target_dir"
               
               # Build CLI (CGO disabled for maximum portability)
-              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -o "$target_dir/shuffle-cli$ext" cmd/shuffle-cli/main.go
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-cli$ext" cmd/shuffle-cli/main.go
               
               # Copy GUI from fyne-cross output
-              # fyne-cross output path pattern: fyne-cross/bin/<target>-<arch>/<name><ext>
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
               
               # Copy README
@@ -55,7 +63,7 @@ jobs:
               
               # Zip it
               cd "$target_dir"
-              zip -r "../../release/shuffle-$platform-$arch.zip" .
+              zip -r "../../release/shuffle-${{ env.VERSION }}-$platform-$arch.zip" .
               cd ../..
             done
           done
@@ -79,6 +87,15 @@ jobs:
           go-version-file: 'go.mod'
           cache: true
 
+      - name: Set Version
+        id: vars
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=dev" >> $GITHUB_ENV
+          fi
+
       - name: Build and Package MacOS
         run: |
           mkdir -p release
@@ -87,17 +104,17 @@ jobs:
             mkdir -p "$target_dir"
             
             # Build CLI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -o "$target_dir/shuffle-cli" cmd/shuffle-cli/main.go
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-cli" cmd/shuffle-cli/main.go
             
             # Build GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w" -o "$target_dir/shuffle-gui" cmd/shuffle-gui/main.go
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-gui" cmd/shuffle-gui/main.go
             
             # Copy README
             cp README.md "$target_dir/"
             
             # Zip it
             cd "$target_dir"
-            zip -r "../../release/shuffle-macos-$arch.zip" .
+            zip -r "../../release/shuffle-${{ env.VERSION }}-macos-$arch.zip" .
             cd ../..
           done
 

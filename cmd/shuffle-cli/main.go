@@ -1,3 +1,18 @@
+// Copyright (C) 2026 Christophe Pallier
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 package main
 
 import (
@@ -7,7 +22,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/chrplr/shuffle/pkg/shuffle"
+	"github.com/chrplr/shuffle-go/internal/version"
+	"github.com/chrplr/shuffle-go/pkg/shuffle"
 )
 
 func main() {
@@ -17,9 +33,15 @@ func main() {
 	iterFlag := flag.Int("i", 0, "Max iterations/loops (0 for default)")
 	equiprobFlag := flag.Bool("e", false, "Use equiprobable shuffle algorithm (slower)")
 	delimFlag := flag.String("d", "", "Field delimiter (empty for whitespace)")
+	versionFlag := flag.Bool("v", false, "Show version")
 	helpFlag := flag.Bool("h", false, "Show help")
 
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("shuffle-cli version %s\n", version.Version)
+		os.Exit(0)
+	}
 
 	if *helpFlag {
 		flag.Usage()

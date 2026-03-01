@@ -1,4 +1,4 @@
-module github.com/chrplr/shuffle
+module github.com/chrplr/shuffle-go
 
 go 1.25.7
 

@@ -86,7 +86,7 @@ Constraints are defined per column:
 You can use the core logic in your own Go projects:
 
 ```go
-import "github.com/chrplr/shuffle/pkg/shuffle"
+import "github.com/chrplr/shuffle-go/pkg/shuffle"
 
 // ... load data ...
 constraints := []shuffle.Constraint{1, -3}

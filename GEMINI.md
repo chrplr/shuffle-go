@@ -31,12 +31,12 @@ To build specific components without the script:
 
 **CLI:**
 ```bash
-go build -o shuffle-cli cmd/shuffle-cli/main.go
+go build -o shuffle-cli ./cmd/shuffle-cli
 ```
 
 **GUI:**
 ```bash
-go build -o shuffle-gui cmd/shuffle-gui/main.go
+go build -o shuffle-gui ./cmd/shuffle-gui
 ```
 
 ### Running Tests

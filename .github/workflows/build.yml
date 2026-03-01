@@ -29,17 +29,28 @@ jobs:
         id: vars
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+            V=${GITHUB_REF#refs/tags/}
+            echo "VERSION=$V" >> $GITHUB_ENV
+            # Strip 'v' prefix for app-version if present
+            CLEAN_V=${V#v}
+            # Ensure it only contains digits and dots (some tags might have suffixes like -rc1)
+            # We'll take only the numeric part
+            if [[ $CLEAN_V =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+              echo "APP_VERSION=${BASH_REMATCH[0]}" >> $GITHUB_ENV
+            else
+              echo "APP_VERSION=0.0.1" >> $GITHUB_ENV
+            fi
           else
             echo "VERSION=dev" >> $GITHUB_ENV
+            echo "APP_VERSION=0.0.1" >> $GITHUB_ENV
           fi
 
       - name: Build with fyne-cross
         run: |
           # Build Linux (amd64, arm64)
-          fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
+          fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
           # Build Windows (amd64, arm64)
-          fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
+          fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
 
       - name: Package
         run: |

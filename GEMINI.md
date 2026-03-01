@@ -10,7 +10,7 @@ The project is structured as follows:
 - `internal/version`: Internal package for managing the application version, injected at build time.
 
 ### Key Technologies
-- **Language**: Go (1.25.7)
+- **Language**: Go (1.24.6)
 - **GUI Toolkit**: Fyne v2
 - **License**: GPLv3
 - **CI/CD**: GitHub Actions for multi-platform builds (Linux, Windows, MacOS).

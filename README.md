@@ -18,6 +18,11 @@ This tool is particularly useful for generating stimuli lists for psychological 
 
 ## Installation
 
+The apps (`shuffle-cli` and `shuffle-gui`) can be downloaded from <https://github.com/chrplr/shuffle-go/releases>.
+
+
+## Compiling from source.
+
 ### Prerequisites
 
 - [Go](https://golang.org/doc/install) (1.21 or later recommended)
@@ -26,7 +31,6 @@ This tool is particularly useful for generating stimuli lists for psychological 
 ### Building
 
 ```bash
-cd go-shuffle
 go mod tidy
 
 # Build CLI
@@ -96,4 +100,6 @@ result, err := shuffler.ShuffleConstructive()
 
 ## License
 
-This project is licensed under the same terms as the original shuffle program (GPL).
+This project is copyrighted by its author, Christophe Pallier <christophe@pallier.org>
+
+It is licensed under the GPLv3.

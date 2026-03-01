@@ -30,10 +30,10 @@ cd go-shuffle
 go mod tidy
 
 # Build CLI
-go build -o shuffle-cli cmd/shuffle-cli/main.go
+go build -o shuffle-cli ./cmd/shuffle-cli
 
 # Build GUI
-go build -o shuffle-gui cmd/shuffle-gui/main.go
+go build -o shuffle-gui ./cmd/shuffle-gui
 ```
 
 ## Usage

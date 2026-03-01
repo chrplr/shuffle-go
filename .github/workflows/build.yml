@@ -37,9 +37,9 @@ jobs:
       - name: Build with fyne-cross
         run: |
           # Build Linux (amd64, arm64)
-          fyne-cross linux -arch amd64,arm64 -name shuffle-gui -ldflags "-X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" cmd/shuffle-gui/main.go
+          fyne-cross linux -arch amd64,arm64 -name shuffle-gui -ldflags "-X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" cmd/shuffle-gui
           # Build Windows (amd64, arm64)
-          fyne-cross windows -arch amd64,arm64 -name shuffle-gui -ldflags "-X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" cmd/shuffle-gui/main.go
+          fyne-cross windows -arch amd64,arm64 -name shuffle-gui -ldflags "-X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" cmd/shuffle-gui
 
       - name: Package
         run: |
@@ -53,7 +53,7 @@ jobs:
               mkdir -p "$target_dir"
               
               # Build CLI (CGO disabled for maximum portability)
-              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-cli$ext" cmd/shuffle-cli/main.go
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
               
               # Copy GUI from fyne-cross output
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
@@ -104,10 +104,10 @@ jobs:
             mkdir -p "$target_dir"
             
             # Build CLI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-cli" cmd/shuffle-cli/main.go
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-cli" ./cmd/shuffle-cli
             
             # Build GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-gui" cmd/shuffle-gui/main.go
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X 'github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}'" -o "$target_dir/shuffle-gui" ./cmd/shuffle-gui
             
             # Copy README
             cp README.md "$target_dir/"

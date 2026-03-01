@@ -13,7 +13,7 @@ echo "Starting build process for Shuffle-Go (Version: $VERSION)..."
 echo "Updating dependencies..."
 go mod tidy
 
-LDFLAGS="-s -w -X '$MODULE/internal/version.Version=$VERSION'"
+LDFLAGS="-s -w -X=$MODULE/internal/version.Version=$VERSION"
 
 # Build the CLI version for local OS
 echo "Building local shuffle-cli..."

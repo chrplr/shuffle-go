@@ -28,6 +28,11 @@ jobs:
       - name: Install fyne-cross
         run: go install github.com/fyne-io/fyne-cross@latest
 
+      - name: Install Dependencies (Linux)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libwayland-dev libgles2-mesa-dev libx11-dev
+
       - name: Set Version
         id: vars
         run: |
@@ -69,8 +74,10 @@ jobs:
               # Build CLI (CGO disabled for maximum portability)
               GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
               
-              # Build Gio GUI
-              GOOS=$platform GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+              # Build Gio GUI (Linux only for now, as Windows CGO cross-build is complex)
+              if [ "$platform" = "linux" ]; then
+                GOOS=$platform GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+              fi
               
               # Copy GUI from fyne-cross output
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"

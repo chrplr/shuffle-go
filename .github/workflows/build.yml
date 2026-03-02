@@ -28,12 +28,6 @@ jobs:
       - name: Install fyne-cross
         run: go install github.com/fyne-io/fyne-cross@latest
 
-      - name: Install Dependencies (Linux)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxkbcommon-dev libwayland-dev libgles2-mesa-dev libx11-dev libvulkan-dev \
-            libxkbcommon-x11-dev libx11-xcb-dev libxcursor-dev libxfixes-dev libegl1-mesa-dev
-
       - name: Set Version
         id: vars
         run: |
@@ -58,8 +52,11 @@ jobs:
         run: |
           # Build Linux (amd64, arm64)
           fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
+          fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
+          
           # Build Windows (amd64, arm64)
           fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
+          fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
 
       - name: Package
         run: |
@@ -75,13 +72,9 @@ jobs:
               # Build CLI (CGO disabled for maximum portability)
               GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
               
-              # Build Gio GUI (Linux only for now, as Windows CGO cross-build is complex)
-              if [ "$platform" = "linux" ]; then
-                GOOS=$platform GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
-              fi
-              
-              # Copy GUI from fyne-cross output
+              # Copy GUIs from fyne-cross output
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
+              cp "fyne-cross/bin/$platform-$arch/shuffle-gio$ext" "$target_dir/"
               
               # Copy README
               cp README.md "$target_dir/"

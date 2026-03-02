@@ -73,7 +73,7 @@ go build -o shuffle-gui ./cmd/shuffle-gio
 ### CLI Tool
 
 ```bash
-./shuffle-cli [flags] [input_file]
+./shuffle-cli [flags] < [input_file]
 ```
 
 **Flags:**
@@ -88,6 +88,7 @@ go build -o shuffle-gui ./cmd/shuffle-gio
 ```bash
 # Shuffle sample.txt, max 1 repetition in col 1, output 10 lines
 ./shuffle-cli -c "1" -n 10 sample.txt
+cat sample.txt | ./shuffle-cli -n 10
 ```
 
 ### GUI Application (Fyne version)

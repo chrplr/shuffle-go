@@ -40,6 +40,7 @@ func main() {
 
 	if *versionFlag {
 		fmt.Printf("shuffle-cli version %s\n", version.Version)
+		fmt.Printf("%s\n", version.Info)
 		os.Exit(0)
 	}
 

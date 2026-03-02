@@ -17,3 +17,4 @@ package version
 
 // Version is the current version of the application, set at compile time.
 var Version = "dev"
+var Info = "(c) 2026 Christophe Pallier <christophe@pallier.org>"

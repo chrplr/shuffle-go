@@ -73,15 +73,15 @@ jobs:
               mkdir -p "$target_dir"
               
               # Build CLI (CGO disabled for maximum portability)
-              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
               
               # Build Gio GUI
               # Linux AMD64 can be built on the host with CGO; Windows doesn't need CGO for Gio.
               # We skip Linux ARM64 for Gio as it requires a complex cross-compilation environment.
               if [ "$platform" = "windows" ]; then
-                GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+                GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
               elif [ "$platform" = "linux" ] && [ "$arch" = "amd64" ]; then
-                GOOS=$platform GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+                GOOS=$platform GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
               fi
               
               # Copy Fyne GUI from fyne-cross output
@@ -92,7 +92,7 @@ jobs:
               
               # Zip it
               cd "$target_dir"
-              zip -r "../../release/shuffle-${{ env.VERSION }-$platform-$arch-binary.zip" .
+              zip -r "../../release/shuffle-$VERSION-$platform-$arch-binary.zip" .
               cd ../..
             done
           done
@@ -133,20 +133,20 @@ jobs:
             mkdir -p "$target_dir"
             
             # Build CLI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli" ./cmd/shuffle-cli
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-cli" ./cmd/shuffle-cli
             
             # Build GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gui.app" ./cmd/shuffle-gui
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gui.app" ./cmd/shuffle-gui
             
             # Build Gio GUI (MacOS needs CGO for Gio)
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
             
             # Copy README
             cp README.md "$target_dir/"
             
             # Zip it
             cd "$target_dir"
-            zip -r "../../release/shuffle-${{ env.VERSION }}-macos-$arch-binary.zip" .
+            zip -r "../../release/shuffle-$VERSION-macos-$arch-binary.zip" .
             cd ../..
           done
 

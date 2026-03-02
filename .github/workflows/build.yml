@@ -33,7 +33,7 @@ jobs:
             libwayland-dev libx11-dev libx11-xcb-dev \
             libxkbcommon-x11-dev libgles2-mesa-dev \
             libegl1-mesa-dev libffi-dev libxcursor-dev \
-            libvulkan-dev
+            libvulkan-dev gcc-aarch64-linux-gnu
 
       - name: Set Version
         id: vars
@@ -80,9 +80,15 @@ jobs:
               # Build Gio GUI
               # Linux needs CGO for Gio; Windows does not.
               CGO_VAL=0
-              if [ "$platform" = "linux" ]; then CGO_VAL=1; fi
+              CC_VAL="gcc"
+              if [ "$platform" = "linux" ]; then 
+                CGO_VAL=1
+                if [ "$arch" = "arm64" ]; then
+                  CC_VAL="aarch64-linux-gnu-gcc"
+                fi
+              fi
               
-              GOOS=$platform GOARCH=$arch CGO_ENABLED=$CGO_VAL go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=$CGO_VAL CC=$CC_VAL go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
               
               # Copy Fyne GUI from fyne-cross output
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
@@ -139,7 +145,7 @@ jobs:
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gui.app" ./cmd/shuffle-gui
             
             # Build Gio GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
             
             # Copy README
             cp README.md "$target_dir/"

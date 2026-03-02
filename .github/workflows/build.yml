@@ -52,11 +52,11 @@ jobs:
         run: |
           # Build Linux (amd64, arm64)
           fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
-          fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
+          fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -tags novulkan -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
           
           # Build Windows (amd64, arm64)
           fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
-          fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
+          fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -tags novulkan -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
 
       - name: Package
         run: |
@@ -128,7 +128,7 @@ jobs:
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gui.app" ./cmd/shuffle-gui
             
             # Build Gio GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
             
             # Copy README
             cp README.md "$target_dir/"

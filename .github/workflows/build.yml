@@ -69,6 +69,9 @@ jobs:
               # Build CLI (CGO disabled for maximum portability)
               GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
               
+              # Build Gio GUI
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+              
               # Copy GUI from fyne-cross output
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
               
@@ -77,7 +80,7 @@ jobs:
               
               # Zip it
               cd "$target_dir"
-              zip -r "../../release/shuffle-${{ env.VERSION }}-$platform-$arch.zip" .
+              zip -r "../../release/shuffle-${{ env.VERSION }}-$platform-$arch-binary.zip" .
               cd ../..
             done
           done
@@ -121,14 +124,17 @@ jobs:
             GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli" ./cmd/shuffle-cli
             
             # Build GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gui" ./cmd/shuffle-gui
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gui.app" ./cmd/shuffle-gui
+            
+            # Build Gio GUI
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
             
             # Copy README
             cp README.md "$target_dir/"
             
             # Zip it
             cd "$target_dir"
-            zip -r "../../release/shuffle-${{ env.VERSION }}-macos-$arch.zip" .
+            zip -r "../../release/shuffle-${{ env.VERSION }}-macos-$arch-binary.zip" .
             cd ../..
           done
 

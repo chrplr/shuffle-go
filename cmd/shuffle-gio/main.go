@@ -18,6 +18,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -31,6 +32,7 @@ import (
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
+	"gioui.org/x/explorer"
 
 	"github.com/chrplr/shuffle-go/pkg/shuffle"
 )
@@ -52,7 +54,11 @@ type shuffleApp struct {
 	equiprob    widget.Bool
 
 	shuffleBtn widget.Clickable
+	importBtn  widget.Clickable
 	status     string
+
+	explorer *explorer.Explorer
+	window   *app.Window
 }
 
 func main() {
@@ -73,7 +79,9 @@ func loop(w *app.Window) error {
 	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
 	
 	s := &shuffleApp{
-		theme: th,
+		theme:    th,
+		window:   w,
+		explorer: explorer.NewExplorer(w),
 	}
 	s.constraints.SetText("")
 	s.seed.SetText("0")
@@ -84,6 +92,7 @@ func loop(w *app.Window) error {
 	var ops op.Ops
 	for {
 		e := w.Event()
+		s.explorer.ListenEvents(e)
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			return e.Err
@@ -98,6 +107,9 @@ func loop(w *app.Window) error {
 func (s *shuffleApp) layout(gtx C) D {
 	if s.shuffleBtn.Clicked(gtx) {
 		s.runShuffle()
+	}
+	if s.importBtn.Clicked(gtx) {
+		s.importFile()
 	}
 
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
@@ -121,7 +133,18 @@ func (s *shuffleApp) layout(gtx C) D {
 							}),
 							layout.Rigid(layout.Spacer{Height: unit.Dp(16)}.Layout),
 							layout.Rigid(func(gtx C) D {
-								return material.Button(s.theme, &s.shuffleBtn, "Shuffle!").Layout(gtx)
+								return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+									layout.Flexed(0.5, func(gtx C) D {
+										return layout.UniformInset(unit.Dp(2)).Layout(gtx, func(gtx C) D {
+											return material.Button(s.theme, &s.importBtn, "Import").Layout(gtx)
+										})
+									}),
+									layout.Flexed(0.5, func(gtx C) D {
+										return layout.UniformInset(unit.Dp(2)).Layout(gtx, func(gtx C) D {
+											return material.Button(s.theme, &s.shuffleBtn, "Shuffle!").Layout(gtx)
+										})
+									}),
+								)
 							}),
 						)
 					})
@@ -223,4 +246,27 @@ func (s *shuffleApp) runShuffle() {
 	}
 	s.textArea.SetText(strings.Join(output, "\n"))
 	s.status = fmt.Sprintf("Success! Processed %d lines.", len(result))
+}
+
+func (s *shuffleApp) importFile() {
+	go func() {
+		file, err := s.explorer.ChooseFile(".txt", ".csv")
+		if err != nil {
+			s.status = fmt.Sprintf("Error choosing file: %v", err)
+			s.window.Invalidate()
+			return
+		}
+		defer file.Close()
+
+		data, err := io.ReadAll(file)
+		if err != nil {
+			s.status = fmt.Sprintf("Error reading file: %v", err)
+			s.window.Invalidate()
+			return
+		}
+
+		s.textArea.SetText(string(data))
+		s.status = "File imported successfully"
+		s.window.Invalidate()
+	}()
 }

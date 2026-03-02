@@ -8,7 +8,9 @@ This tool is particularly useful for generating stimuli lists for psychological 
 
 - **Core Library**: A reusable Go package (`pkg/shuffle`) for constraint-based shuffling.
 - **CLI Tool**: A powerful command-line interface for batch processing.
-- **GUI App**: An interactive desktop application built with Fyne.
+- **GUI Apps**: 
+    - **Fyne version**: A desktop application built with Fyne (`shuffle-gui`).
+    - **Gio version**: A lightweight desktop application built with Gio (`shuffle-gio`), supporting native file import.
 - **Constraint Support**:
     - **Max Repetitions**: Limit consecutive occurrences of the same label in a column.
     - **Min Gap**: Ensure a minimum distance between identical labels in a column.
@@ -18,7 +20,26 @@ This tool is particularly useful for generating stimuli lists for psychological 
 
 ## Installation
 
-The apps (`shuffle-cli` and `shuffle-gui`) can be downloaded from <https://github.com/chrplr/shuffle-go/releases>.
+The apps (`shuffle-cli`, `shuffle-gui` and `shuffle-gio`) can be downloaded from <https://github.com/chrplr/shuffle-go/releases>.
+
+### macOS Security Note
+
+Because these binaries are not signed by an Apple Developer account, macOS may prevent them from running.
+You will need to explicitly authorize them to run in `System Settings > Privacy & Security` parameters.                                                                              
+
+#### For the GUI apps (`shuffle-gui.app` and `shuffle-gio.app`):
+1. **Right-click** (or Control-click) the `.app` icon.
+2. Select **Open** from the shortcut menu.
+3. Click **Open** in the dialog box that appears.
+
+
+#### For the CLI (`shuffle-cli`):
+Open a terminal in the folder containing the binary and run:
+```bash
+chmod +x shuffle-cli
+xattr -d com.apple.quarantine shuffle-cli
+```
+Then you can run it normally: `./shuffle-cli`
 
 
 ## Compiling from source.
@@ -36,9 +57,16 @@ go mod tidy
 # Build CLI
 go build -o shuffle-cli ./cmd/shuffle-cli
 
-# Build GUI
+# Build GUI based on Fyne
 go build -o shuffle-gui ./cmd/shuffle-gui
+
+# Build GUI based on Gio
+go build -o shuffle-gui ./cmd/shuffle-gio
+
 ```
+
+
+
 
 ## Usage
 
@@ -62,17 +90,34 @@ go build -o shuffle-gui ./cmd/shuffle-gui
 ./shuffle-cli -c "1" -n 10 sample.txt
 ```
 
-### GUI Application
+### GUI Application (Fyne version)
 
-Run the GUI with:
+Run the GUI by double-clicking it (on macOS, use `shuffle-gui.app`) or from the terminal:
 ```bash
-./shuffle-gui
+./shuffle-gui      # on Linux
+./shuffle-gui.exe  # on Windows
+./shuffle-gui.app  # on macOS
 ```
-The GUI allows you to:
-1. Load data from `.txt` or `.csv` files.
+
+The Fyne version allows you to:
+1. Load data from `.txt` or `.csv` files using the "Open" button.
 2. Interactively set constraints and shuffling parameters.
 3. Preview the results in a text area.
-4. Save the shuffled list to a new file.
+4. Save the shuffled list to a new file using the "Save" button.
+
+### GUI Application (Gio version)
+
+Run the Gio GUI by double-clicking it (on macOS, use `shuffle-gio.app`) or from the terminal:
+```bash
+./shuffle-gio      # on Linux
+./shuffle-gio.exe  # on Windows
+./shuffle-gio.app  # on macOS
+```
+
+The Gio version features a native file selector via the **Import** button.
+1. Click **Import** to load a `.txt` or `.csv` file.
+2. Adjust constraints and parameters in the sidebar.
+3. Click **Shuffle!** to process the data.
 
 ## Constraints Explained
 

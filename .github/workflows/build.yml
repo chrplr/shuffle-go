@@ -2,8 +2,6 @@ name: Build and Release
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -28,6 +26,15 @@ jobs:
       - name: Install fyne-cross
         run: go install github.com/fyne-io/fyne-cross@latest
 
+      - name: Install Linux Dependencies (for Gio)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwayland-dev libx11-dev libx11-xcb-dev \
+            libxkbcommon-x11-dev libgles2-mesa-dev \
+            libegl1-mesa-dev libffi-dev libxcursor-dev \
+            libvulkan-dev
+
       - name: Set Version
         id: vars
         run: |
@@ -48,15 +55,13 @@ jobs:
             echo "APP_VERSION=0.0.1" >> $GITHUB_ENV
           fi
 
-      - name: Build with fyne-cross
+      - name: Build with fyne-cross (for Fyne GUI)
         run: |
           # Build Linux (amd64, arm64)
           fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
-          fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -tags novulkan -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
           
           # Build Windows (amd64, arm64)
           fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
-          fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go.gio -app-version $APP_VERSION -name shuffle-gio -tags novulkan -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gio
 
       - name: Package
         run: |
@@ -72,9 +77,15 @@ jobs:
               # Build CLI (CGO disabled for maximum portability)
               GOOS=$platform GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-cli$ext" ./cmd/shuffle-cli
               
-              # Copy GUIs from fyne-cross output
+              # Build Gio GUI
+              # Linux needs CGO for Gio; Windows does not.
+              CGO_VAL=0
+              if [ "$platform" = "linux" ]; then CGO_VAL=1; fi
+              
+              GOOS=$platform GOARCH=$arch CGO_ENABLED=$CGO_VAL go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=${{ env.VERSION }}" -o "$target_dir/shuffle-gio$ext" ./cmd/shuffle-gio
+              
+              # Copy Fyne GUI from fyne-cross output
               cp "fyne-cross/bin/$platform-$arch/shuffle-gui$ext" "$target_dir/"
-              cp "fyne-cross/bin/$platform-$arch/shuffle-gio$ext" "$target_dir/"
               
               # Copy README
               cp README.md "$target_dir/"

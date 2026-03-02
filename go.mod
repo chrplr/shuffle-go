@@ -5,12 +5,12 @@ go 1.24.6
 require (
 	fyne.io/fyne/v2 v2.7.3
 	gioui.org v0.9.0
+	gioui.org/x v0.9.0
 )
 
 require (
 	fyne.io/systray v1.12.0 // indirect
 	gioui.org/shader v1.0.8 // indirect
-	gioui.org/x v0.9.0 // indirect
 	git.wow.st/gmp/jni v0.0.0-20210610011705-34026c7e22d0 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect

@@ -250,7 +250,7 @@ func (s *shuffleApp) runShuffle() {
 
 func (s *shuffleApp) importFile() {
 	go func() {
-		file, err := s.explorer.ChooseFile(".txt", ".csv")
+		file, err := s.explorer.ChooseFile()
 		if err != nil {
 			s.status = fmt.Sprintf("Error choosing file: %v", err)
 			s.window.Invalidate()

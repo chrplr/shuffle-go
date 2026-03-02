@@ -31,7 +31,8 @@ jobs:
       - name: Install Dependencies (Linux)
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxkbcommon-dev libwayland-dev libgles2-mesa-dev libx11-dev libvulkan-dev
+          sudo apt-get install -y libxkbcommon-dev libwayland-dev libgles2-mesa-dev libx11-dev libvulkan-dev \
+            libxkbcommon-x11-dev libx11-xcb-dev libxcursor-dev libxfixes-dev libegl1-mesa-dev
 
       - name: Set Version
         id: vars

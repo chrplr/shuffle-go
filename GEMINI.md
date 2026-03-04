@@ -4,7 +4,7 @@
 **Shuffle-Go** is a Go-based implementation of a constraint-based shuffling utility. It allows users to randomize lists while adhering to specific sequential constraints, such as limiting consecutive repetitions of the same item or ensuring a minimum gap between identical items. This is particularly useful for generating experimental stimuli in psychological research.
 
 The project is structured as follows:
-- `pkg/shuffle`: Core library containing the shuffling logic, data structures (`Shuffler`, `Constraint`), and file loading utilities.
+- `shuffle/`: Core library containing the shuffling logic, data structures (`Shuffler`, `Constraint`), and file loading utilities.
 - `cmd/shuffle-cli`: A command-line interface for the shuffler.
 - `cmd/shuffle-gui`: A graphical user interface built using the [Fyne](https://fyne.io/) toolkit.
 - `internal/version`: Internal package for managing the application version, injected at build time.

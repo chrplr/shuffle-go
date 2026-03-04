@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/chrplr/shuffle-go/internal/version"
-	"github.com/chrplr/shuffle-go/pkg/shuffle"
+	"github.com/chrplr/shuffle-go/shuffle"
 )
 
 func main() {

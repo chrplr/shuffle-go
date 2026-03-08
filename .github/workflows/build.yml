@@ -198,6 +198,9 @@ jobs:
           fi
 
       - name: Build and Package MacOS
+        env:
+          GOPROXY: direct
+          GOSUMDB: off
         run: |
           mkdir -p release
           # Install Fyne tool to help with packaging

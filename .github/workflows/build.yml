@@ -33,7 +33,7 @@ jobs:
             libwayland-dev libx11-dev libx11-xcb-dev \
             libxkbcommon-x11-dev libgles2-mesa-dev \
             libegl1-mesa-dev libffi-dev libxcursor-dev \
-            libvulkan-dev gcc-aarch64-linux-gnu
+            libvulkan-dev gcc-aarch64-linux-gnu nsis
 
       - name: Set Version
         id: vars
@@ -97,11 +97,81 @@ jobs:
             done
           done
 
+      - name: Create Linux AppImage and Windows Setup
+        run: |
+          # 1. Linux AppImage (AMD64)
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+          
+          mkdir -p AppDir/usr/bin
+          cp dist/linux-amd64/shuffle-gui AppDir/usr/bin/
+          cp dist/linux-amd64/shuffle-cli AppDir/usr/bin/
+          
+          cat <<EOF > AppDir/shuffle-go.desktop
+          [Desktop Entry]
+          Type=Application
+          Name=Shuffle-Go
+          Exec=shuffle-gui
+          Icon=shuffle
+          Categories=Utility;
+          EOF
+          
+          # Use the provided jpg for the AppImage icon
+          cp shuffle.jpg AppDir/shuffle.jpg
+          # AppImage typically expects icons named after the Icon field in .desktop
+          cp shuffle.jpg AppDir/shuffle.png
+          
+          cat <<EOF > AppDir/AppRun
+          #!/bin/sh
+          HERE="\$(dirname "\$(readlink -f "\${0}")")"
+          exec "\${HERE}/usr/bin/shuffle-gui" "\$@"
+          EOF
+          chmod +x AppDir/AppRun
+          
+          ARCH=x86_64 ./appimagetool --appimage-extract-and-run AppDir release/shuffle-$VERSION-linux-amd64.AppImage
+
+          # 2. Windows Setup (AMD64)
+          cat <<EOF > shuffle-go.nsi
+          !include "MUI2.nsh"
+          Name "Shuffle-Go"
+          OutFile "release/shuffle-$VERSION-windows-amd64-setup.exe"
+          InstallDir "\$PROGRAMFILES\Shuffle-Go"
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+          !insertmacro MUI_UNPAGE_WELCOME
+          !insertmacro MUI_UNPAGE_CONFIRM
+          !insertmacro MUI_UNPAGE_INSTFILES
+          !insertmacro MUI_UNPAGE_FINISH
+          !insertmacro MUI_LANGUAGE "English"
+          Section "Install"
+            SetOutPath "\$INSTDIR"
+            File "/oname=shuffle-gui.exe" "dist/windows-amd64/shuffle-gui.exe"
+            File "/oname=shuffle-cli.exe" "dist/windows-amd64/shuffle-cli.exe"
+            File "shuffle.jpg"
+            WriteUninstaller "\$INSTDIR\uninstall.exe"
+            CreateShortcut "\$DESKTOP\Shuffle-Go.lnk" "\$INSTDIR\shuffle-gui.exe"
+          SectionEnd
+          Section "Uninstall"
+            Delete "\$INSTDIR\shuffle-gui.exe"
+            Delete "\$INSTDIR\shuffle-cli.exe"
+            Delete "\$INSTDIR\shuffle.jpg"
+            Delete "\$INSTDIR\uninstall.exe"
+            Delete "\$DESKTOP\Shuffle-Go.lnk"
+            RMDir "\$INSTDIR"
+          SectionEnd
+          EOF
+          makensis shuffle-go.nsi
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-windows-binaries
-          path: release/*.zip
+          path: |
+            release/*.zip
+            release/*.AppImage
+            release/*-setup.exe
 
   build-macos:
     name: Build MacOS
@@ -128,6 +198,9 @@ jobs:
       - name: Build and Package MacOS
         run: |
           mkdir -p release
+          # Install Fyne tool to help with packaging
+          go install fyne.io/fyne/v2/cmd/fyne@latest
+          
           for arch in amd64 arm64; do
             target_dir="dist/macos-$arch"
             mkdir -p "$target_dir"
@@ -135,8 +208,13 @@ jobs:
             # Build CLI
             GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-cli" ./cmd/shuffle-cli
             
-            # Build GUI
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gui.app" ./cmd/shuffle-gui
+            # Build GUI and package as .app
+            # We use 'fyne package' for the main GUI to get a proper .app structure
+            cd cmd/shuffle-gui
+            fyne package -os darwin -arch $arch -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon ../../shuffle.jpg
+            # Rename the resulting .app to include the arch and move it to target_dir
+            mv Shuffle-Go.app ../../$target_dir/
+            cd ../..
             
             # Build Gio GUI (MacOS needs CGO for Gio)
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
@@ -144,7 +222,12 @@ jobs:
             # Copy README
             cp README.md "$target_dir/"
             
-            # Zip it
+            # Create DMG for the main GUI (only for amd64 in this example, or both)
+            if [ "$arch" = "amd64" ] || [ "$arch" = "arm64" ]; then
+              hdiutil create -volname "Shuffle-Go-$arch" -srcfolder "$target_dir/Shuffle-Go.app" -ov -format UDZO "release/shuffle-$VERSION-macos-$arch.dmg"
+            fi
+
+            # Zip everything as before
             cd "$target_dir"
             zip -r "../../release/shuffle-$VERSION-macos-$arch-binary.zip" .
             cd ../..
@@ -154,7 +237,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-binaries
-          path: release/*.zip
+          path: |
+            release/*.zip
+            release/*.dmg
 
   release:
     name: Create Release
@@ -171,5 +256,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release/*.zip
+          files: |
+            release/*.zip
+            release/*.dmg
+            release/*.AppImage
+            release/*-setup.exe
           generate_release_notes: true

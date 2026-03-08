@@ -203,8 +203,12 @@ jobs:
           # Install Fyne tool to help with packaging
           go install fyne.io/fyne/v2/cmd/fyne@latest
           
-          # Ensure dependencies are downloaded
+          # Ensure dependencies are downloaded and module is clean
           go mod download
+          go mod tidy
+          
+          # Test build to ensure everything is resolved
+          go build ./...
           
           for arch in amd64 arm64; do
             target_dir="dist/macos-$arch"
@@ -213,13 +217,16 @@ jobs:
             # Build CLI
             GOOS=darwin GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-cli" ./cmd/shuffle-cli
             
-            # Build GUI and package as .app
-            # We use 'fyne package' for the main GUI to get a proper .app structure
-            # Running from root and pointing to the package directory
-            fyne package -os darwin -arch $arch -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon shuffle.jpg -src ./cmd/shuffle-gui
+            # Build GUI
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gui-raw" ./cmd/shuffle-gui
             
-            # Move the resulting .app to target_dir
+            # Package as .app using 'fyne package'
+            # We point to the raw binary to avoid another build during packaging
+            fyne package -os darwin -arch $arch -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
+            
+            # Move the resulting .app to target_dir and remove the raw binary
             mv Shuffle-Go.app "$target_dir/"
+            rm "$target_dir/shuffle-gui-raw"
             
             # Build Gio GUI (MacOS needs CGO for Gio)
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio

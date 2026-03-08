@@ -34,7 +34,7 @@ import (
 	"gioui.org/widget/material"
 	"gioui.org/x/explorer"
 
-	"github.com/chrplr/shuffle-go/shuffle"
+	"github.com/chrplr/shuffle-go"
 )
 
 type (

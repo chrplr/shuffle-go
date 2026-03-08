@@ -31,7 +31,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/chrplr/shuffle-go/internal/version"
-	"github.com/chrplr/shuffle-go/shuffle"
+	"github.com/chrplr/shuffle-go"
 )
 
 type shuffleApp struct {

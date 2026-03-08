@@ -9,7 +9,7 @@ This tool is particularly useful for generating stimuli lists for psychological 
 
 ## Features
 
-- **Core Library**: A reusable Go package (`pkg/shuffle`) for constraint-based shuffling.
+- **Core Library**: A reusable Go package (the root of this module) for constraint-based shuffling.
 - **CLI Tool**: A powerful command-line interface for batch processing.
 - **GUI Apps**: 
     - **Fyne version**: A desktop application built with Fyne (`shuffle-gui`).
@@ -23,49 +23,63 @@ This tool is particularly useful for generating stimuli lists for psychological 
 
 ## Installation
 
-The apps (`shuffle-cli`, `shuffle-gui` and `shuffle-gio`) can be downloaded from <https://github.com/chrplr/shuffle-go/releases>.
+The easiest way to get Shuffle-Go is to download the latest version from the [Releases page](https://github.com/chrplr/shuffle-go/releases).
+
+### 1. Using the Installers (Recommended for most users)
+
+These are standard installers that will set up the application on your computer:
+
+- **Windows**: Download `shuffle-VERSION-windows-amd64-setup.exe`. Run it to install Shuffle-Go. It will create a desktop shortcut for the GUI version and install the command-line tool as well.
+- **macOS**: Download `shuffle-VERSION-macos-amd64.dmg` (for Intel Macs) or `shuffle-VERSION-macos-arm64.dmg` (for Apple Silicon/M1/M2/M3). Open the DMG file and drag **Shuffle-Go** to your **Applications** folder.
+- **Linux**: Download `shuffle-VERSION-linux-amd64.AppImage`. Right-click the file, go to **Properties > Permissions**, and check **"Allow executing file as program"**. You can then double-click it to run.
+
+### 2. Using Pre-compiled Binaries (Portable version)
+
+If you don't want to install the app, you can download the `.zip` archives for your platform.
+
+1. Download the `.zip` file for your Operating System and Architecture.
+2. Extract the archive to a folder of your choice.
+3. You will find:
+    - `shuffle-gui`: The main graphical interface (Fyne version).
+    - `shuffle-gio`: An alternative lightweight graphical interface.
+    - `shuffle-cli`: The command-line interface for terminal use.
+
+### 3. Compiling from Source (For developers)
+
+If you have [Go](https://golang.org/doc/install) installed, you can build the project yourself.
+
+#### Prerequisites
+- **Go 1.24** or later.
+- **C Compiler**: Required for building the GUI components (e.g., GCC on Linux/Windows, or Xcode Command Line Tools on macOS).
+
+#### Building
+Run the provided build script:
+```bash
+bash build.sh
+```
+Or build specific components manually:
+```bash
+# Build the CLI
+go build -o shuffle-cli ./cmd/shuffle-cli
+
+# Build the Fyne GUI
+go build -o shuffle-gui ./cmd/shuffle-gui
+```
 
 ### macOS Security Note
 
-Because these binaries are not signed by an Apple Developer account, macOS may prevent them from running.
-You will need to explicitly authorize them to run in `System Settings > Privacy & Security` parameters.                                                                              
+Because these binaries are not signed by an Apple Developer account, macOS may prevent them from running initially.
 
-#### For the GUI apps (`shuffle-gui.app` and `shuffle-gio.app`):
-1. **Right-click** (or Control-click) the `.app` icon.
-2. Select **Open** from the shortcut menu.
-3. Click **Open** in the dialog box that appears.
-
+#### For the GUI apps:
+1. **Right-click** (or Control-click) the **Shuffle-Go** icon in your Applications folder.
+2. Select **Open** from the menu.
+3. Click **Open** again in the security dialog box that appears. You only need to do this once.
 
 #### For the CLI (`shuffle-cli`):
-Open a terminal in the folder containing the binary and run:
+If you use the portable version, you may need to clear the quarantine flag in the terminal:
 ```bash
 chmod +x shuffle-cli
 xattr -d com.apple.quarantine shuffle-cli
-```
-Then you can run it normally: `./shuffle-cli`
-
-
-## Compiling from source.
-
-### Prerequisites
-
-- [Go](https://golang.org/doc/install) (1.21 or later recommended)
-- For the GUI: C compiler and development headers for your graphics driver (required by Fyne).
-
-### Building
-
-```bash
-go mod tidy
-
-# Build CLI
-go build -o shuffle-cli ./cmd/shuffle-cli
-
-# Build GUI based on Fyne
-go build -o shuffle-gui ./cmd/shuffle-gui
-
-# Build GUI based on Gio
-go build -o shuffle-gui ./cmd/shuffle-gio
-
 ```
 
 
@@ -139,7 +153,7 @@ Constraints are defined per column:
 You can use the core logic in your own Go projects:
 
 ```go
-import "github.com/chrplr/shuffle-go/shuffle"
+import "github.com/chrplr/shuffle-go"
 
 // ... load data ...
 constraints := []shuffle.Constraint{1, -3}

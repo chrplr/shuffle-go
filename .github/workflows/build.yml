@@ -101,8 +101,12 @@ jobs:
 
       - name: Create Linux AppImage and Windows Setup
         run: |
+          # Debug: list the dist directory to ensure binaries are there
+          ls -R dist/
+
           # 1. Linux AppImage (AMD64)
-          wget -q https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
+          # Using the correct, up-to-date URL from the appimagetool repository
+          wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
           chmod +x appimagetool
           
           mkdir -p AppDir/usr/bin
@@ -200,8 +204,8 @@ jobs:
       - name: Build and Package MacOS
         run: |
           mkdir -p release
-          # Install Fyne tool to help with packaging
-          go install fyne.io/fyne/v2/cmd/fyne@latest
+          # Install the new Fyne tool (fyne.io/tools/cmd/fyne)
+          go install fyne.io/tools/cmd/fyne@latest
           
           # Ensure dependencies are downloaded
           go mod download
@@ -217,7 +221,8 @@ jobs:
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gui-raw" ./cmd/shuffle-gui
             
             # Package as .app using 'fyne package'
-            fyne package -os darwin -arch $arch -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
+            # Note: with the new fyne tool, we'll let it use its defaults or minimal flags
+            fyne package -os darwin -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
             
             # Move the resulting .app to target_dir and remove the raw binary
             mv Shuffle-Go.app "$target_dir/"

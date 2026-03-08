@@ -196,9 +196,19 @@ jobs:
         id: vars
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+            V=${GITHUB_REF#refs/tags/}
+            echo "VERSION=$V" >> $GITHUB_ENV
+            # Strip 'v' prefix for app-version if present
+            CLEAN_V=${V#v}
+            # Ensure it only contains digits and dots
+            if [[ $CLEAN_V =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+              echo "APP_VERSION=${BASH_REMATCH[0]}" >> $GITHUB_ENV
+            else
+              echo "APP_VERSION=0.0.1" >> $GITHUB_ENV
+            fi
           else
             echo "VERSION=dev" >> $GITHUB_ENV
+            echo "APP_VERSION=0.0.1" >> $GITHUB_ENV
           fi
 
       - name: Build and Package MacOS
@@ -222,7 +232,7 @@ jobs:
             
             # Package as .app using 'fyne package'
             # Note: with the new fyne tool, flags have been renamed to use hyphens (e.g., -app-id)
-            fyne package -os darwin -name Shuffle-Go -app-id com.chrplr.shuffle -app-version $VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
+            fyne package -os darwin -name Shuffle-Go -app-id com.chrplr.shuffle -app-version $APP_VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
             
             # Move the resulting .app to target_dir and remove the raw binary
             mv Shuffle-Go.app "$target_dir/"

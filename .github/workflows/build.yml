@@ -221,8 +221,8 @@ jobs:
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gui-raw" ./cmd/shuffle-gui
             
             # Package as .app using 'fyne package'
-            # Note: with the new fyne tool, we'll let it use its defaults or minimal flags
-            fyne package -os darwin -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
+            # Note: with the new fyne tool, flags have been renamed to use hyphens (e.g., -app-id)
+            fyne package -os darwin -name Shuffle-Go -app-id com.chrplr.shuffle -app-version $VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
             
             # Move the resulting .app to target_dir and remove the raw binary
             mv Shuffle-Go.app "$target_dir/"

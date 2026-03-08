@@ -199,9 +199,6 @@ jobs:
           fi
 
       - name: Build and Package MacOS
-        env:
-          GO111MODULE: on
-          GOPROXY: off
         run: |
           mkdir -p release
           # Install Fyne tool to help with packaging

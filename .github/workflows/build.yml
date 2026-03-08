@@ -57,6 +57,8 @@ jobs:
 
       - name: Build with fyne-cross
         run: |
+          # Ensure dependencies are downloaded
+          go mod download
           # Build Fyne GUI
           fyne-cross linux -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
           fyne-cross windows -arch amd64,arm64 -app-id github.com.chrplr.shuffle-go -app-version $APP_VERSION -name shuffle-gui -ldflags "-X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" ./cmd/shuffle-gui
@@ -201,6 +203,9 @@ jobs:
           # Install Fyne tool to help with packaging
           go install fyne.io/fyne/v2/cmd/fyne@latest
           
+          # Ensure dependencies are downloaded
+          go mod download
+          
           for arch in amd64 arm64; do
             target_dir="dist/macos-$arch"
             mkdir -p "$target_dir"
@@ -210,11 +215,11 @@ jobs:
             
             # Build GUI and package as .app
             # We use 'fyne package' for the main GUI to get a proper .app structure
-            cd cmd/shuffle-gui
-            fyne package -os darwin -arch $arch -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon ../../shuffle.jpg
-            # Rename the resulting .app to include the arch and move it to target_dir
-            mv Shuffle-Go.app ../../$target_dir/
-            cd ../..
+            # Running from root and pointing to the package directory
+            fyne package -os darwin -arch $arch -name Shuffle-Go -appID com.chrplr.shuffle -appVersion $VERSION -icon shuffle.jpg -src ./cmd/shuffle-gui
+            
+            # Move the resulting .app to target_dir
+            mv Shuffle-Go.app "$target_dir/"
             
             # Build Gio GUI (MacOS needs CGO for Gio)
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
@@ -222,7 +227,7 @@ jobs:
             # Copy README
             cp README.md "$target_dir/"
             
-            # Create DMG for the main GUI (only for amd64 in this example, or both)
+            # Create DMG for the main GUI
             if [ "$arch" = "amd64" ] || [ "$arch" = "arm64" ]; then
               hdiutil create -volname "Shuffle-Go-$arch" -srcfolder "$target_dir/Shuffle-Go.app" -ov -format UDZO "release/shuffle-$VERSION-macos-$arch.dmg"
             fi

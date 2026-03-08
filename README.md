@@ -2,6 +2,7 @@
 
 *See an HTML formatted version of this document [here](https://chrplr.github.io/shuffle-go)*
 
+
 A Go implementation of the `[shuffle](https://github.com/chrplr/shuffle)` program, providing a core library and both CLI and GUI interfaces for generating randomized sequences with sequential constraints.
 
 This tool is particularly useful for generating stimuli lists for psychological experiments or any task requiring quasi-randomized permutations that avoid specific repetitions or patterns.

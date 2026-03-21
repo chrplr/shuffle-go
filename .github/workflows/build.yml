@@ -233,10 +233,13 @@ jobs:
             # Package as .app using 'fyne package'
             # Note: with the new fyne tool, flags have been renamed to use hyphens (e.g., -app-id)
             fyne package -os darwin -name Shuffle-Go -app-id com.chrplr.shuffle -app-version $APP_VERSION -icon shuffle.jpg -executable "$target_dir/shuffle-gui-raw"
-            
+
             # Move the resulting .app to target_dir and remove the raw binary
             mv Shuffle-Go.app "$target_dir/"
             rm "$target_dir/shuffle-gui-raw"
+
+            # Ad-hoc sign to prevent macOS Gatekeeper "damaged" error
+            codesign --force --deep --sign - "$target_dir/Shuffle-Go.app"
             
             # Build Gio GUI (MacOS needs CGO for Gio)
             GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
@@ -244,10 +247,8 @@ jobs:
             # Copy README
             cp README.md "$target_dir/"
             
-            # Create DMG for the main GUI
-            if [ "$arch" = "amd64" ] || [ "$arch" = "arm64" ]; then
-              hdiutil create -volname "Shuffle-Go-$arch" -srcfolder "$target_dir/Shuffle-Go.app" -ov -format UDZO "release/shuffle-$VERSION-macos-$arch.dmg"
-            fi
+            # Zip the .app so users can extract and drag it wherever they want
+            zip -r "release/shuffle-$VERSION-macos-$arch.zip" -j "" "$target_dir/Shuffle-Go.app"
 
             # Zip everything as before
             cd "$target_dir"
@@ -261,7 +262,6 @@ jobs:
           name: macos-binaries
           path: |
             release/*.zip
-            release/*.dmg
 
   release:
     name: Create Release
@@ -280,7 +280,6 @@ jobs:
         with:
           files: |
             release/*.zip
-            release/*.dmg
             release/*.AppImage
             release/*-setup.exe
           generate_release_notes: true

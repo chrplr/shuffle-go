@@ -30,7 +30,11 @@ The easiest way to get Shuffle-Go is to download the latest version from the [Re
 These are standard installers that will set up the application on your computer:
 
 - **Windows**: Download `shuffle-VERSION-windows-amd64-setup.exe`. Run it to install Shuffle-Go. It will create a desktop shortcut for the GUI version and install the command-line tool as well.
-- **macOS**: Download `shuffle-VERSION-macos-amd64.dmg` (for Intel Macs) or `shuffle-VERSION-macos-arm64.dmg` (for Apple Silicon/M1/M2/M3). Open the DMG file and drag **Shuffle-Go** to your **Applications** folder.
+- **macOS**: Download `shuffle-VERSION-macos-amd64.zip` (for Intel Macs) or `shuffle-VERSION-macos-arm64.zip` (for Apple Silicon/M1/M2/M3). Extract the archive and drag **Shuffle-Go.app** to your **Applications** folder (or anywhere you like).
+
+  > [!WARNING]
+  > macOS may show a security warning the first time you open the app. See [macOS installation and security](https://chrplr.github.io/note-about-macos-unsigned-apps) for an explanation and step-by-step instructions to bypass it.
+
 - **Linux**: Download `shuffle-VERSION-linux-amd64.AppImage`. Right-click the file, go to **Properties > Permissions**, and check **"Allow executing file as program"**. You can then double-click it to run.
 
 ### 2. Using Pre-compiled Binaries (Portable version)
@@ -65,24 +69,6 @@ go build -o shuffle-cli ./cmd/shuffle-cli
 # Build the Fyne GUI
 go build -o shuffle-gui ./cmd/shuffle-gui
 ```
-
-### macOS Security Note
-
-Because these binaries are not signed by an Apple Developer account, macOS may prevent them from running initially.
-
-#### For the GUI apps:
-1. **Right-click** (or Control-click) the **Shuffle-Go** icon in your Applications folder.
-2. Select **Open** from the menu.
-3. Click **Open** again in the security dialog box that appears. You only need to do this once.
-
-#### For the CLI (`shuffle-cli`):
-If you use the portable version, you may need to clear the quarantine flag in the terminal:
-```bash
-chmod +x shuffle-cli
-xattr -d com.apple.quarantine shuffle-cli
-```
-
-
 
 
 ## Usage

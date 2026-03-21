@@ -23,23 +23,23 @@ This tool is particularly useful for generating stimuli lists for psychological 
 
 ## Installation
 
-The easiest way to get Shuffle-Go is to download the latest version from the [Releases page](https://github.com/chrplr/shuffle-go/releases).
+The easiest way to get Shuffle-Go is to download the latest installer directly below.
 
 ### 1. Using the Installers (Recommended for most users)
 
 These are standard installers that will set up the application on your computer:
 
-- **Windows**: Download `shuffle-VERSION-windows-amd64-setup.exe`. Run it to install Shuffle-Go. It will create a desktop shortcut for the GUI version and install the command-line tool as well.
-- **macOS**: Download `shuffle-VERSION-macos-amd64.zip` (for Intel Macs) or `shuffle-VERSION-macos-arm64.zip` (for Apple Silicon/M1/M2/M3). Extract the archive and drag **Shuffle-Go.app** to your **Applications** folder (or anywhere you like).
+- **Windows**: Download [shuffle-windows-x86_64-setup.exe](https://github.com/chrplr/shuffle-go/releases/latest/download/shuffle-windows-x86_64-setup.exe). Run it to install Shuffle-Go. It will create a desktop shortcut for the GUI version and install the command-line tool as well.
+- **macOS**: Download [shuffle-macos-arm64-app.zip](https://github.com/chrplr/shuffle-go/releases/latest/download/shuffle-macos-arm64-app.zip) (Apple Silicon/M1/M2/M3) or [shuffle-macos-x86_64-app.zip](https://github.com/chrplr/shuffle-go/releases/latest/download/shuffle-macos-x86_64-app.zip) (Intel). Extract the archive and drag **Shuffle-Go.app** to your **Applications** folder (or anywhere you like).
 
   > [!WARNING]
   > macOS may show a security warning the first time you open the app. See [macOS installation and security](https://chrplr.github.io/note-about-macos-unsigned-apps) for an explanation and step-by-step instructions to bypass it.
 
-- **Linux**: Download `shuffle-VERSION-linux-amd64.AppImage`. Right-click the file, go to **Properties > Permissions**, and check **"Allow executing file as program"**. You can then double-click it to run.
+- **Linux**: Download [shuffle-linux-x86_64.AppImage](https://github.com/chrplr/shuffle-go/releases/latest/download/shuffle-linux-x86_64.AppImage). Right-click the file, go to **Properties > Permissions**, and check **"Allow executing file as program"**. You can then double-click it to run.
 
 ### 2. Using Pre-compiled Binaries (Portable version)
 
-If you don't want to install the app, you can download the `.zip` archives for your platform.
+If you don't want to install the app, download a `.zip` archive from the [Releases page](https://github.com/chrplr/shuffle-go/releases) for your platform.
 
 1. Download the `.zip` file for your Operating System and Architecture.
 2. Extract the archive to a folder of your choice.

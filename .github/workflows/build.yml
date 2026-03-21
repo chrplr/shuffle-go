@@ -70,6 +70,7 @@ jobs:
             for arch in amd64 arm64; do
               ext=""
               if [ "$platform" = "windows" ]; then ext=".exe"; fi
+              if [ "$arch" = "amd64" ]; then ARTIFACT_ARCH="x86_64"; else ARTIFACT_ARCH="arm64"; fi
               
               target_dir="dist/$platform-$arch"
               mkdir -p "$target_dir"
@@ -94,7 +95,7 @@ jobs:
               
               # Zip it
               cd "$target_dir"
-              zip -r "../../release/shuffle-$VERSION-$platform-$arch-binary.zip" .
+              zip -r "../../release/shuffle-$VERSION-$platform-$ARTIFACT_ARCH.zip" .
               cd ../..
             done
           done
@@ -134,13 +135,13 @@ jobs:
           EOF
           chmod +x AppDir/AppRun
           
-          ARCH=x86_64 ./appimagetool --appimage-extract-and-run AppDir release/shuffle-$VERSION-linux-amd64.AppImage
+          ARCH=x86_64 ./appimagetool --appimage-extract-and-run AppDir release/shuffle-linux-x86_64.AppImage
 
           # 2. Windows Setup (AMD64)
           cat <<EOF > shuffle-go.nsi
           !include "MUI2.nsh"
           Name "Shuffle-Go"
-          OutFile "release/shuffle-$VERSION-windows-amd64-setup.exe"
+          OutFile "release/shuffle-windows-x86_64-setup.exe"
           InstallDir "\$PROGRAMFILES\Shuffle-Go"
           !insertmacro MUI_PAGE_WELCOME
           !insertmacro MUI_PAGE_DIRECTORY
@@ -221,6 +222,7 @@ jobs:
           go mod download
           
           for arch in amd64 arm64; do
+            if [ "$arch" = "amd64" ]; then ARTIFACT_ARCH="x86_64"; else ARTIFACT_ARCH="arm64"; fi
             target_dir="dist/macos-$arch"
             mkdir -p "$target_dir"
             
@@ -248,11 +250,11 @@ jobs:
             cp README.md "$target_dir/"
             
             # Zip the .app so users can extract and drag it wherever they want
-            zip -r "release/shuffle-$VERSION-macos-$arch.zip" -j "" "$target_dir/Shuffle-Go.app"
+            zip -r "release/shuffle-macos-$ARTIFACT_ARCH-app.zip" -j "" "$target_dir/Shuffle-Go.app"
 
             # Zip everything as before
             cd "$target_dir"
-            zip -r "../../release/shuffle-$VERSION-macos-$arch-binary.zip" .
+            zip -r "../../release/shuffle-$VERSION-macos-$ARTIFACT_ARCH.zip" .
             cd ../..
           done
 

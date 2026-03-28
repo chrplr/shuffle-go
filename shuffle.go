@@ -13,6 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// Package shuffle provides constraint-based list randomization.
+//
+// It shuffles multi-column data while enforcing sequential constraints such as
+// maximum consecutive repetitions or minimum gap between identical items in a
+// column. The primary use case is generating randomized experimental stimuli
+// for psychological research.
+//
+// Two shuffling strategies are available:
+//   - [Shuffler.ShuffleConstructive]: fast greedy algorithm, suitable for most use cases.
+//   - [Shuffler.ShuffleEquiprob]: brute-force permutation filter giving equal probability
+//     to all valid outputs; much slower, use only for small datasets.
+//
+// Constraints are encoded as integers per column (see [Constraint]).
 package shuffle
 
 import (
@@ -24,6 +37,17 @@ import (
 	"strings"
 	"time"
 )
+
+// defaultEquiprobMaxIter is the default maximum number of random permutations
+// tried by ShuffleEquiprob before giving up.
+const defaultEquiprobMaxIter = 1000
+
+// defaultConstructiveMaxIter returns the default maximum number of full-shuffle
+// attempts for ShuffleConstructive, based on the number of rows in the dataset.
+// Using numRows as the limit gives more attempts for larger, harder instances.
+func defaultConstructiveMaxIter(numRows int) int {
+	return numRows
+}
 
 // LoadData reads lines from r and splits them by delimiter.
 func LoadData(r io.Reader, delimiter string) ([][]string, error) {
@@ -160,7 +184,7 @@ func (s *Shuffler) ShuffleEquiprob() ([][]string, error) {
 	iter := 0
 	maxIter := s.MaxIter
 	if maxIter <= 0 {
-		maxIter = 1000 // Default for equiprob
+		maxIter = defaultEquiprobMaxIter
 	}
 
 	for iter < maxIter {
@@ -242,7 +266,7 @@ func (s *Shuffler) ShuffleConstructive() ([][]string, error) {
 	numRows := len(s.Data)
 	maxAttempts := s.MaxIter
 	if maxAttempts <= 0 {
-		maxAttempts = numRows
+		maxAttempts = defaultConstructiveMaxIter(numRows)
 	}
 
 	for attempt := 0; attempt < maxAttempts; attempt++ {

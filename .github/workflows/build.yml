@@ -244,8 +244,11 @@ jobs:
             codesign --force --deep --sign - "$target_dir/Shuffle-Go.app"
             
             # Build Gio GUI (MacOS needs CGO for Gio)
-            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio.app" ./cmd/shuffle-gio
-            
+            GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -tags novulkan -ldflags="-s -w -X=github.com/chrplr/shuffle-go/internal/version.Version=$VERSION" -o "$target_dir/shuffle-gio" ./cmd/shuffle-gio
+
+            # Ad-hoc sign to prevent macOS Gatekeeper from blocking the CGO binary
+            codesign --force --sign - "$target_dir/shuffle-gio"
+
             # Copy README
             cp README.md "$target_dir/"
             

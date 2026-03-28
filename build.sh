@@ -25,7 +25,7 @@ go build -ldflags="$LDFLAGS" -o shuffle-gui ./cmd/shuffle-gui
 
 # Build the GUI version (Gio)
 echo "Building local shuffle-gio..."
-go build -ldflags="$LDFLAGS" -o shuffle-gio ./cmd/shuffle-gio
+go build -tags novulkan -ldflags="$LDFLAGS" -o shuffle-gio ./cmd/shuffle-gio
 
 # Cross-compilation examples using fyne-cross (if installed)
 if command -v fyne-cross >/dev/null 2>&1; then

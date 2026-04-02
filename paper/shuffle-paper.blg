@@ -1,19 +1,19 @@
 [0] Config.pm:308> INFO - This is Biber 2.20
 [0] Config.pm:311> INFO - Logfile is 'shuffle-paper.blg'
-[61] biber:340> INFO - === Sat Mar 28, 2026, 13:30:03
-[77] Biber.pm:420> INFO - Reading 'shuffle-paper.bcf'
-[145] Biber.pm:994> INFO - Found 12 citekeys in bib section 0
-[165] Biber.pm:4463> INFO - Processing section 0
-[174] Biber.pm:4654> INFO - Looking for bibtex file 'references.bib' for section 0
-[175] bibtex.pm:1713> INFO - LaTeX decoding ...
-[185] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[271] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[271] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[271] Biber.pm:4283> INFO - Sorting list 'apa/apasortcite//global/global/global' of type 'entry' with template 'apa' and locale 'en-US'
-[271] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
-[294] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[295] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[295] Biber.pm:4283> INFO - Sorting list 'apa/global//global/global/global' of type 'entry' with template 'apa' and locale 'en-US'
-[295] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
-[308] bbl.pm:676> INFO - Writing 'shuffle-paper.bbl' with encoding 'UTF-8'
-[316] bbl.pm:779> INFO - Output to shuffle-paper.bbl
+[61] biber:340> INFO - === Thu Apr  2, 2026, 20:36:47
+[76] Biber.pm:420> INFO - Reading 'shuffle-paper.bcf'
+[142] Biber.pm:994> INFO - Found 12 citekeys in bib section 0
+[162] Biber.pm:4463> INFO - Processing section 0
+[171] Biber.pm:4654> INFO - Looking for bibtex file 'references.bib' for section 0
+[172] bibtex.pm:1713> INFO - LaTeX decoding ...
+[181] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[267] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[267] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[267] Biber.pm:4283> INFO - Sorting list 'apa/apasortcite//global/global/global' of type 'entry' with template 'apa' and locale 'en-US'
+[267] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[290] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[290] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[290] Biber.pm:4283> INFO - Sorting list 'apa/global//global/global/global' of type 'entry' with template 'apa' and locale 'en-US'
+[290] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[303] bbl.pm:676> INFO - Writing 'shuffle-paper.bbl' with encoding 'UTF-8'
+[312] bbl.pm:779> INFO - Output to shuffle-paper.bbl

@@ -1,24 +1,30 @@
 # Shuffle-Go
 
-*See an HTML formatted version of this document [here](https://chrplr.github.io/shuffle-go)*
+* [GitHub repository](https://github.com/chrplr/shuffle-go)
 
+Shuffle creates randomized sequences respecting contraints. It is particularily useful for generating stimuli lists for psychological experiments or any task requiring quasi-randomized permutations that avoid specific repetitions or patterns.
 
-A Go implementation of the `[shuffle](https://github.com/chrplr/shuffle)` program, providing a core library and both CLI and GUI interfaces for generating randomized sequences with sequential constraints.
-
-This tool is particularly useful for generating stimuli lists for psychological experiments or any task requiring quasi-randomized permutations that avoid specific repetitions or patterns.
-
-## Features
-
-- **GUI App (Gio)**: A lightweight desktop application with native file dialogs (`shuffle-gio`). Recommended for most users.
-- **GUI App (Fyne)**: An alternative desktop application built with Fyne (`shuffle-gui`), for users who prefer its interface.
-- **CLI Tool**: A command-line interface for power users — scriptable, pipeable, and easy to integrate into automated workflows (`shuffle-cli`).
-- **Core Library**: A reusable Go package for constraint-based shuffling, embeddable in your own projects.
 - **Constraint Support**:
     - **Max Repetitions**: Limit consecutive occurrences of the same label in a column.
     - **Min Gap**: Ensure a minimum distance between identical labels in a column.
 - **Dual Algorithms**:
     - **Constructive**: Fast, line-by-line building (standard).
     - **Equiprobable**: Brute-force filtering to ensure every valid permutation is equally likely.
+
+
+**Read the [paper](https://github.com/chrplr/shuffle-go/blob/main/paper/shuffle-paper.pdf)**
+
+---
+
+
+Shuffle-go is a Go implementation of the `[original shuffle](https://github.com/chrplr/shuffle)` program.
+
+It provides:
+
+- **A Core Library**: A reusable Go package for constraint-based shuffling, embeddable in your own projects.
+- **A CLI Tool**: A command-line interface for power users — scriptable, pipeable, and easy to integrate into automated workflows (`shuffle-cli`).
+- **A GUI App (Gio)**: A lightweight desktop application with native file dialogs (`shuffle-gio`). Recommended for most users.
+- **A GUI App (Fyne)**: An alternative desktop application built with Fyne (`shuffle-gui`), for users who prefer its interface.
 
 ## Installation
 
@@ -159,4 +165,5 @@ result, err := shuffler.ShuffleConstructive()
 
 This project is copyrighted by its author, Christophe Pallier <christophe@pallier.org>
 
-It is licensed under the GPLv3.
+It is licensed under the [GNU General Public License v3](LICENSE.txt)
+

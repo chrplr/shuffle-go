@@ -76,3 +76,7 @@ bash build.sh
 
 ## License
 Copyright © Christophe Pallier. Licensed under the [GNU GPL v3](LICENSE.txt).
+
+If you use this software, please cite this repository as:
+
+> > Pallier, C. (2026). shuffle-go [Computer software]. GitHub. https://github.com/chrplr/shuffle-go
